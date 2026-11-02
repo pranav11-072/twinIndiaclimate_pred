@@ -162,7 +162,7 @@ When deploying to **Render** or similar cloud platforms:
 * `NODE_ENV`: Set to `production`.
 
 ### 3. Built-In Resilience
-* **Automatic Runtime Fallback**: If the build step did not output `dist/index.html` (e.g. if the build command was set only to `bun install`), `server.ts` automatically initializes Vite's runtime middleware on the fly to serve the application without throwing `ENOENT` errors.
+* **Automatic Runtime Fallback & Allowed Hosts**: If the build step did not output `dist/index.html` (e.g. if the build command was set only to `bun install`), `server.ts` automatically initializes Vite's runtime middleware with `allowedHosts: true` to seamlessly serve incoming requests from `*.onrender.com` or custom domains without host header blockage.
 * **Lazy AI Initialization**: Eliminates console warnings at startup if `GEMINI_API_KEY` is not immediately set.
 
 ---

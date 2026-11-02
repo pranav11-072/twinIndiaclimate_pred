@@ -8,6 +8,9 @@ import { GoogleGenAI } from '@google/genai';
 
 dotenv.config();
 
+// Suppress experimental native config loader warning in Vite 8+
+process.env.VITE_CONFIG_NATIVE_IGNORE_WARNING = 'true';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -98,23 +101,38 @@ async function startServer() {
     });
   });
 
-  // Check if production build exists on disk
+  // Static asset serving and Vite middleware integration
+  const isProduction = process.env.NODE_ENV === 'production';
   const distPath = path.resolve(__dirname, 'dist');
   const distIndexPath = path.resolve(distPath, 'index.html');
-  const hasDist = fs.existsSync(distIndexPath);
 
-  if (hasDist) {
-    console.log('[Digital Twin Server] Serving static build from:', distPath);
+  if (isProduction && fs.existsSync(distIndexPath)) {
+    console.log('[Digital Twin Server] Production mode: Serving static build from:', distPath);
     app.use(express.static(distPath));
-    app.get('*', (_req, res) => {
-      res.sendFile(distIndexPath);
+    app.get('*', (req, res, next) => {
+      // Never intercept API routes
+      if (req.path.startsWith('/api/')) {
+        return next();
+      }
+      if (fs.existsSync(distIndexPath)) {
+        res.sendFile(distIndexPath, (err) => {
+          if (err && !res.headersSent) {
+            console.error('[Digital Twin Server] Error sending dist/index.html:', err.message);
+            res.status(500).send('Error serving application.');
+          }
+        });
+      } else {
+        res.status(404).send('Production build not found. Please run npm run build.');
+      }
     });
   } else {
-    // If dist/ was not built (e.g. Render build command ran only bun/npm install),
-    // launch Vite in middleware mode so the app is compiled and served dynamically without crashing.
-    console.log('[Digital Twin Server] Static dist/index.html not found. Initializing Vite runtime middleware...');
+    // In development mode (or if production dist is missing), launch Vite in middleware mode
+    console.log(`[Digital Twin Server] ${isProduction ? 'Static dist missing' : 'Development mode'}: Initializing Vite runtime middleware...`);
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        allowedHosts: true,
+      },
       appType: 'spa',
     });
     app.use(vite.middlewares);
