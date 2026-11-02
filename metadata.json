@@ -1,0 +1,6 @@
+{
+  "name": "AI-Powered Digital Twin of India's Climate",
+  "description": "National Climate Intelligence and Adaptation Platform providing interactive digital twin modeling, ConvLSTM AI forecasts, geospatial visualization, and what-if scenario simulations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
