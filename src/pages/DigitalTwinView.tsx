@@ -15,13 +15,18 @@ import {
   CheckCircle,
   ArrowRight,
   TrendingUp,
-  Activity
+  Activity,
+  Box
 } from 'lucide-react';
 import { DigitalTwinState } from '../types/climate';
 import { climateService } from '../services/climateService';
 import { BadgeTag } from '../components/BadgeTag';
 
-export const DigitalTwinView: React.FC = () => {
+interface DigitalTwinViewProps {
+  onOpen3DObservatory?: () => void;
+}
+
+export const DigitalTwinView: React.FC<DigitalTwinViewProps> = ({ onOpen3DObservatory }) => {
   // Timeline offset: -3 to +7 (-3 days historical, 0 is now, +7 days forecast)
   const [timelineIndex, setTimelineIndex] = useState<number>(0);
   const [twinState, setTwinState] = useState<DigitalTwinState | null>(null);
@@ -80,7 +85,16 @@ export const DigitalTwinView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {onOpen3DObservatory && (
+            <button
+              onClick={onOpen3DObservatory}
+              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 text-xs font-mono font-semibold transition-colors cursor-pointer shadow-lg"
+            >
+              <Box className="w-4 h-4 text-cyan-400" />
+              <span>Launch 3D Subcontinent Observatory (Three.js) →</span>
+            </button>
+          )}
           <div className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-right font-mono">
             <span className="text-[10px] text-slate-500 block">SIMULATION CLOCK</span>
             <span className="text-xs font-bold text-cyan-300">{twinState.timestamp}</span>

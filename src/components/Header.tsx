@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Bell, Shield, User, Globe, Sparkles, Terminal } from 'lucide-react';
+import { Activity, Bell, Shield, User, Globe, Sparkles, Terminal, Box, Bot } from 'lucide-react';
 import { BadgeTag } from './BadgeTag';
 
 interface HeaderProps {
@@ -8,6 +8,8 @@ interface HeaderProps {
   onOpenApiModal?: () => void;
   activeViewTitle?: string;
   onNavigateToPolitical?: () => void;
+  onNavigateToObservatory?: () => void;
+  onNavigateToChat?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -15,6 +17,8 @@ export const Header: React.FC<HeaderProps> = ({
   unreadAlertsCount = 4,
   onOpenApiModal,
   onNavigateToPolitical,
+  onNavigateToObservatory,
+  onNavigateToChat,
 }) => {
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between px-5 py-3 border-b border-slate-800/80 bg-[#07090e]/90 backdrop-blur-md">
@@ -50,6 +54,30 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
           <span className="text-slate-400">Last updated: 25 Sep 2026 | 18:30 IST</span>
         </div>
+
+        {/* 3D Observatory button */}
+        {onNavigateToObservatory && (
+          <button
+            onClick={onNavigateToObservatory}
+            title="Interactive Three.js 3D Climate Observatory"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/20 transition-colors"
+          >
+            <Box className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="hidden sm:inline">3D Observatory</span>
+          </button>
+        )}
+
+        {/* Gemini Chat Copilot button */}
+        {onNavigateToChat && (
+          <button
+            onClick={onNavigateToChat}
+            title="Open Gemini Climate Intelligence Copilot"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 transition-colors"
+          >
+            <Bot className="w-3.5 h-3.5 text-amber-400" />
+            <span className="hidden sm:inline">Gemini AI</span>
+          </button>
+        )}
 
         {/* Political Map Explorer button */}
         {onNavigateToPolitical && (

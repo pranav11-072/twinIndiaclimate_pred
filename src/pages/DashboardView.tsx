@@ -14,7 +14,9 @@ import {
   ChevronRight,
   TrendingUp,
   MapPin,
-  ExternalLink
+  ExternalLink,
+  Box,
+  Bot
 } from 'lucide-react';
 import { RegionalClimateData, ClimateVariable } from '../types/climate';
 import { ClimateMetricCard } from '../components/ClimateMetricCard';
@@ -63,32 +65,39 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </p>
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <button
+                onClick={() => onNavigate('observatory-3d')}
+                className="flex items-center gap-2 px-4 py-2 text-xs font-mono font-bold rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/25 transition-all cursor-pointer"
+              >
+                <Box className="w-4 h-4" />
+                3D Climate Observatory (Three.js)
+              </button>
+              <button
+                onClick={() => onNavigate('ai-copilot')}
+                className="flex items-center gap-2 px-4 py-2 text-xs font-mono font-bold rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-lg shadow-amber-500/25 transition-all cursor-pointer"
+              >
+                <Bot className="w-4 h-4" />
+                Ask Gemini Copilot
+              </button>
+              <button
                 onClick={() => onNavigate('political-explorer')}
-                className="flex items-center gap-2 px-4 py-2 text-xs font-mono font-bold rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/25 transition-all cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-emerald-500/90 hover:bg-emerald-400 text-slate-950 shadow-md transition-all cursor-pointer"
               >
                 <MapPin className="w-4 h-4" />
-                Survey of India Political Map
+                SOI Political Map
               </button>
               <button
                 onClick={() => onNavigate('digital-twin')}
-                className="flex items-center gap-2 px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/25 transition-all cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all cursor-pointer"
               >
                 <Cpu className="w-4 h-4" />
-                Explore 5-Spheres Twin
+                5-Spheres Twin
               </button>
               <button
                 onClick={() => onNavigate('scenario-lab')}
                 className="flex items-center gap-2 px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all cursor-pointer"
               >
                 <SlidersHorizontal className="w-4 h-4 text-cyan-400" />
-                Run What-If Scenario
-              </button>
-              <button
-                onClick={() => onNavigate('forecast')}
-                className="flex items-center gap-2 px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all cursor-pointer"
-              >
-                <Sparkles className="w-4 h-4 text-amber-400" />
-                ConvLSTM AI Forecast
+                Scenario Lab
               </button>
             </div>
           </div>

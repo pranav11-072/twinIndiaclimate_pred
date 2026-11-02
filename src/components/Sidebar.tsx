@@ -13,10 +13,14 @@ import {
   ChevronRight,
   Sparkles,
   Compass,
+  Box,
+  Bot,
 } from 'lucide-react';
 
 export type NavView = 
   | 'overview' 
+  | 'observatory-3d'
+  | 'ai-copilot'
   | 'political-explorer'
   | 'digital-twin' 
   | 'forecast' 
@@ -49,6 +53,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const navItems: NavItem[] = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+    { id: 'observatory-3d', label: '3D Observatory', icon: Box, badge: 'Three.js' },
+    { id: 'ai-copilot', label: 'Gemini Copilot', icon: Bot, badge: 'Multi-Turn' },
     { id: 'political-explorer', label: 'Political Map (SOI)', icon: Compass, badge: 'Official SOI' },
     { id: 'digital-twin', label: 'Digital Twin', icon: Cpu, badge: '5-Spheres' },
     { id: 'forecast', label: 'AI Forecast', icon: Sparkles, badge: 'ConvLSTM' },

@@ -36,9 +36,25 @@ A high-performance, real-time national digital twin and climate intelligence sys
   * Monsoon delay and aerosol cooling interventions
 * **Socioeconomic Impact Matrix**: Real-time estimates for crop yield risk, groundwater depletion rates, cooling demand spikes, and vulnerable populations.
 
-### 4. Geospatial Multi-Spectral Satellite Layers
-* **Leaflet & Canvas Overlay**: Interactive tiles for radar reflectivity, INSAT-3D Land Surface Temperature (LST), Sea Surface Temperature (SST), and cyclone path tracking.
-* **Active Disaster Warnings**: Automated real-time tracking of heatwaves, cloudbursts, severe depressions, and cold waves.
+### 4. Interactive 3D Climate Observatory (Three.js PBR)
+* **Physically-Based Rendering (PBR)**: Implemented using `ACESFilmicToneMapping`, `RoomEnvironment` with `PMREMGenerator`, warm directional key lighting + cool `HemisphereLight` bounce, and horizon-matched atmospheric fog (`FogExp2`).
+* **Composite 3–12 Part Procedural Models**:
+  * **ISRO INSAT-3DR Geostationary Climate Satellite**: 10-part procedural model assembling hexagonal titanium chassis, gold MLI thermal blanket, stepped optical sounder barrel, quartz lens, parabolic Earth antenna dish, feed horn tripod, articulated boom trusses, dual photovoltaic solar arrays, and RCS attitude thruster clusters.
+  * **Ground Doppler Weather Radar Towers**: 7-part composite station with concrete hexagonal base, steel lattice mast, catwalk platform, geodesic radome, anemometer, and contact ground shadows.
+* **Full-Bleed Viewport & Collapsible Bottom Dock**: Ergonomic floating control dock (`<= 15%` viewport footprint) with cinema mode toggle (`▾ Hide Controls`), camera view presets (Synoptic India, INSAT-3DR, Himalayas, Monsoon Front), and dynamic layer toggles.
+* **Lossless 60fps Loop & Software-WebGL Guard**: Pre-allocated math scratchpads (`Vector3`, `Matrix4`, `Quaternion`) with exponential damping (`1 - Math.exp(-k * dt)`) and `afterDraw` software WebGL safety pacing.
+
+### 5. Multi-Turn Gemini AI Climate Copilot
+* **Server-Side Authenticated GenAI Proxy**: Powered by `@google/genai` (v2.32+) via Express `/api/chat` with telemetry header tracking.
+* **Dynamic Model Selection**:
+  * `gemini-3.8-flash`: General national climate intelligence and anomaly synthesis.
+  * `gemini-3.1-flash-lite`: Low-latency, fast queries and real-time advisory.
+  * `gemini-4-argon`: Complex deep reasoning for spatiotemporal mathematical modeling and long-range policy stress testing.
+* **Role-Specific System Instructions**:
+  * **Lead Climate Scientist**: Spatiotemporal ConvLSTM modeling and atmospheric physics.
+  * **Disaster Resilience & Adaptation Strategist**: Action plans, district vulnerability, and NDMA protocols.
+  * **Chief Operational Meteorologist**: Synoptic telemetry and ISRO INSAT-3DR sounding analysis.
+* **Scrollable Thread & History**: Interactive conversation history with markdown formatting, prompt suggestions, and one-click copy.
 
 ---
 

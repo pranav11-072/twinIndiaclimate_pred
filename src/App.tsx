@@ -22,6 +22,8 @@ import { ScenarioSimulatorView } from './pages/ScenarioSimulatorView';
 import { ClimateRiskView } from './pages/ClimateRiskView';
 import { ModelPerformanceView } from './pages/ModelPerformanceView';
 import { DataSourcesView } from './pages/DataSourcesView';
+import { IndiaClimate3DScene } from './components/three/IndiaClimate3DScene';
+import { GeminiChatView } from './components/chat/GeminiChatView';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<NavView>('overview');
@@ -47,6 +49,8 @@ export default function App() {
         unreadAlertsCount={EXTREME_WEATHER_ALERTS.length}
         onOpenApiModal={() => setApiModalOpen(true)}
         onNavigateToPolitical={() => setCurrentView('political-explorer')}
+        onNavigateToObservatory={() => setCurrentView('observatory-3d')}
+        onNavigateToChat={() => setCurrentView('ai-copilot')}
       />
 
       <div className="flex-1 flex overflow-hidden">
@@ -72,11 +76,21 @@ export default function App() {
             />
           )}
 
+          {currentView === 'observatory-3d' && (
+            <div className="h-[calc(100vh-8.5rem)] rounded-2xl overflow-hidden border border-slate-800 shadow-2xl relative">
+              <IndiaClimate3DScene />
+            </div>
+          )}
+
+          {currentView === 'ai-copilot' && <GeminiChatView />}
+
           {currentView === 'political-explorer' && (
             <PoliticalExplorerView onReturnToTwin={() => setCurrentView('digital-twin')} />
           )}
 
-          {currentView === 'digital-twin' && <DigitalTwinView />}
+          {currentView === 'digital-twin' && (
+            <DigitalTwinView onOpen3DObservatory={() => setCurrentView('observatory-3d')} />
+          )}
 
           {currentView === 'forecast' && (
             <ForecastView
