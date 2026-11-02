@@ -141,8 +141,29 @@ A high-performance, real-time national digital twin and climate intelligence sys
 ### Available Scripts
 * `npm run dev` — Launches Vite development server on port `3000`.
 * `npm run build` — Compiles production-ready bundle into the `dist/` directory.
+* `npm run start` — Starts the Express production server (`node server.ts`).
 * `npm run lint` — Runs TypeScript compiler (`tsc --noEmit`) to validate type integrity.
 * `npm run preview` — Locally preview the production build.
+
+---
+
+## ☁️ Deployment Guide (Render, Railway, Cloud Run)
+
+When deploying to **Render** or similar cloud platforms:
+
+### 1. Render Service Settings
+* **Environment**: Node / Bun
+* **Build Command**: `bun install && bun run build` *(or `npm install && npm run build`)*
+* **Start Command**: `bun run start` *(or `npm run start`)*
+* **Port**: Render automatically provisions `PORT=10000`.
+
+### 2. Environment Variables
+* `GEMINI_API_KEY` *(optional, recommended)*: Enables the server-side Gemini AI Climate Copilot. Get a key from Google AI Studio.
+* `NODE_ENV`: Set to `production`.
+
+### 3. Built-In Resilience
+* **Automatic Runtime Fallback**: If the build step did not output `dist/index.html` (e.g. if the build command was set only to `bun install`), `server.ts` automatically initializes Vite's runtime middleware on the fly to serve the application without throwing `ENOENT` errors.
+* **Lazy AI Initialization**: Eliminates console warnings at startup if `GEMINI_API_KEY` is not immediately set.
 
 ---
 

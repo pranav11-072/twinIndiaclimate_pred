@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
 
@@ -10,21 +11,27 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-async function startServer() {
-  const app = express();
-  const PORT = Number(process.env.PORT) || 3000;
-
-  app.use(express.json());
-
-  // Server-side Google GenAI initialization with required telemetry header
-  const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY,
+// Lazy initialization of GoogleGenAI to prevent premature missing-key warnings at boot time
+function getGeminiClient(): GoogleGenAI | null {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey || apiKey.trim() === '') {
+    return null;
+  }
+  return new GoogleGenAI({
+    apiKey,
     httpOptions: {
       headers: {
         'User-Agent': 'aistudio-build',
       },
     },
   });
+}
+
+async function startServer() {
+  const app = express();
+  const PORT = Number(process.env.PORT) || 3000;
+
+  app.use(express.json());
 
   // Multi-turn Gemini Chat API endpoint
   app.post('/api/chat', async (req, res) => {
@@ -33,6 +40,13 @@ async function startServer() {
 
       if (!messages || !Array.isArray(messages) || messages.length === 0) {
         return res.status(400).json({ error: 'Messages array is required' });
+      }
+
+      const ai = getGeminiClient();
+      if (!ai) {
+        return res.status(503).json({
+          error: 'GEMINI_API_KEY is not configured in the server environment. Please set GEMINI_API_KEY in your hosting environment variables.',
+        });
       }
 
       // Valid models selection: gemini-4-argon (complex), gemini-3.8-flash (general), gemini-3.1-flash-lite (fast)
@@ -53,13 +67,6 @@ async function startServer() {
         role: m.role === 'model' ? 'model' : 'user',
         parts: [{ text: String(m.text || '') }],
       }));
-
-      // Check if API key is present
-      if (!process.env.GEMINI_API_KEY) {
-        return res.status(500).json({
-          error: 'GEMINI_API_KEY is not configured in the server environment. Please attach a valid API key in Settings > Secrets.',
-        });
-      }
 
       const response = await ai.models.generateContent({
         model: selectedModel,
@@ -83,23 +90,43 @@ async function startServer() {
 
   // Health check endpoint
   app.get('/api/health', (_req, res) => {
-    res.json({ status: 'ok', twinOnline: true, time: new Date().toISOString() });
+    res.json({
+      status: 'ok',
+      twinOnline: true,
+      hasGeminiKey: Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim() !== ''),
+      time: new Date().toISOString(),
+    });
   });
 
-  // Vite development middleware or static serving in production
-  const isProduction = process.env.NODE_ENV === 'production';
-  if (!isProduction) {
+  // Check if production build exists on disk
+  const distPath = path.resolve(__dirname, 'dist');
+  const distIndexPath = path.resolve(distPath, 'index.html');
+  const hasDist = fs.existsSync(distIndexPath);
+
+  if (hasDist) {
+    console.log('[Digital Twin Server] Serving static build from:', distPath);
+    app.use(express.static(distPath));
+    app.get('*', (_req, res) => {
+      res.sendFile(distIndexPath);
+    });
+  } else {
+    // If dist/ was not built (e.g. Render build command ran only bun/npm install),
+    // launch Vite in middleware mode so the app is compiled and served dynamically without crashing.
+    console.log('[Digital Twin Server] Static dist/index.html not found. Initializing Vite runtime middleware...');
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
     });
     app.use(vite.middlewares);
-  } else {
-    app.use(express.static(path.resolve(__dirname, 'dist')));
-    app.get('*', (_req, res) => {
-      res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
-    });
   }
+
+  // Global error handler
+  app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    console.error('[Digital Twin Server Error]:', err);
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Internal Server Error', message: err?.message || 'Unknown error' });
+    }
+  });
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Digital Twin Server running on http://localhost:${PORT}`);
